@@ -208,7 +208,7 @@ if __name__ == "__main__":
     # fig.show()
     new_lr = lr_finder.suggestion()
     if os.getenv("LOCAL_RANK", "0") == "0" and os.getenv("NODE_RANK", "0") == "0":
-        fig.savefig("activity_logs/" + logger.name + "/lr_finder.png")
+        fig.savefig("logs/HAR/" + logger.name + "/lr_finder.png")
         # model.save_hyperparameters()
     print(
         colored.Fore.green

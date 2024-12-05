@@ -1,25 +1,59 @@
 # GATIS
 
-> This is the repo for the GATIS model.
+> This is the repo for the GATIS model. Please follow the instructions according to the writing order; you must set the environment first, then the weights and datasets, and then run the script for testing or training.
 
 
 ### environment setup
+> Install the environment
 ```bash
-conda env create -f config.yaml
+conda env create -f config.yaml 
+
+# If the cmd of creation fails in the creation, you may run the following line to complete the installation, or you may skip it 
+conda env update -f config.yaml
+```
+
+> Add the environment variable
+```bash
+mkdir -p $CONDA_PREFIX/etc/conda/activate.d
+echo '#!/bin/sh 
+export CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)")) 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CONDA_PREFIX/lib/:$CUDNN_PATH/lib 
+export XLA_FLAGS=--xla_gpu_cuda_data_dir=$CONDA_PREFIX/lib/ 
+export NCCL_IB_DISABLE=1 
+export NCCL_PROTO=SIMPLE 
+' > $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
+
+mkdir -p $CONDA_PREFIX/etc/conda/deactivate.d
+echo '#!/bin/sh 
+unset CUDNN_PATH
+unset LD_LIBRARY_PATH
+unset NCCL_SOCKET_IFNAME
+unset NCCL_IB_DISABLE
+unset NCCL_PROTO
+' > $CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh
+```
+
+> Activate environment
+```bash
 conda activate gatis
 ```
 
+
 ### Datasets Download
 ```bash
-wget --no-check-certificate 'https://drive.google.com/file/d/1Yp5NiMTHCWvWJl9VBQUzbBcfWlka5QGL/view?usp=drive_link' -O datasets.zip
+# https://drive.google.com/file/d/1Yp5NiMTHCWvWJl9VBQUzbBcfWlka5QGL/view?usp=drive_link
+gdown 1Yp5NiMTHCWvWJl9VBQUzbBcfWlka5QGL # need to install the conda environment first, the gdown is the pip package
 unzip datasets.zip && rm datasets.zip 
 ```
+> or you may down from the website (link)[https://drive.google.com/file/d/1Yp5NiMTHCWvWJl9VBQUzbBcfWlka5QGL/view?usp=drive_link]
 
 ### Based Model weight and Best Model weight Download
 ```bash
-wget --no-check-certificate 'https://drive.google.com/file/d/1Yp5NiMTHCWvWJl9VBQUzbBcfWlka5QGL/view?usp=drive_link' -O weights.zip
+# https://drive.google.com/file/d/1Tc1sv4uJaDCIekYXjcQw41ZJkXOTIIr6/view?usp=sharing
+gdown 1Tc1sv4uJaDCIekYXjcQw41ZJkXOTIIr6 # need to install the conda environment first, the gdown is the pip package
 unzip weights.zip && rm weights.zip 
 ```
+> or you may down from the website (link)[https://drive.google.com/file/d/1Tc1sv4uJaDCIekYXjcQw41ZJkXOTIIr6/view?usp=sharing]
 
 
 #### Usage
