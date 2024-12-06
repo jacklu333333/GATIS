@@ -8,12 +8,16 @@
 ```bash
 conda env create -f config.yaml 
 
-# If the cmd of creation fails in the creation, you may run the following line to complete the installation, or you may skip it 
+# If the cmd of creation fails in the creation, you may run the following line to complete the installation. If not, you may skip it 
 conda env update -f config.yaml
 ```
 
 > Add the environment variable
 ```bash
+# you will need to first activate the enviroment to get the variable of environment correctly
+conda activate gatis 
+
+# add the activate variable 
 mkdir -p $CONDA_PREFIX/etc/conda/activate.d
 echo '#!/bin/sh 
 export CUDNN_PATH=$(dirname $(python -c "import nvidia.cudnn;print(nvidia.cudnn.__file__)")) 
@@ -23,6 +27,7 @@ export NCCL_IB_DISABLE=1
 export NCCL_PROTO=SIMPLE 
 ' > $CONDA_PREFIX/etc/conda/activate.d/env_vars.sh
 
+# add the deactivate variable removal
 mkdir -p $CONDA_PREFIX/etc/conda/deactivate.d
 echo '#!/bin/sh 
 unset CUDNN_PATH
@@ -31,6 +36,9 @@ unset NCCL_SOCKET_IFNAME
 unset NCCL_IB_DISABLE
 unset NCCL_PROTO
 ' > $CONDA_PREFIX/etc/conda/deactivate.d/env_vars.sh
+
+# activat the environment to apply the variable 
+conda activate gatis
 ```
 
 > Activate environment
@@ -40,6 +48,11 @@ conda activate gatis
 
 
 ### Datasets Download
+```bash 
+# install the google drive downloading tool from pip library
+pip install gdown
+```
+
 ```bash
 # https://drive.google.com/file/d/1Yp5NiMTHCWvWJl9VBQUzbBcfWlka5QGL/view?usp=drive_link
 gdown 1Yp5NiMTHCWvWJl9VBQUzbBcfWlka5QGL # need to install the conda environment first, the gdown is the pip package
