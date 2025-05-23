@@ -1246,6 +1246,13 @@ class IndoorDataset(Dataset):
                 # convert to datetime from str ex :2021-03-16 07:45:14.890
                 date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S.%f")
                 location = "MotionID"
+            elif "PINDWS" in self.root_dir:
+                date = df["timestamp"].iloc[0]
+                date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S.%f")
+                location = "PINDWS"
+            elif "OIOD" in self.root_dir:
+                date = None
+                location = "Oxford"
             else:
                 raise ValueError("Invalid dataset for background date.")
 

@@ -255,77 +255,49 @@ if __name__ == "__main__":
     )
 
     ###########################################################################################################################
+    for datasets_path in [
+        "./datasets/ADVIO/advio_wm",
+        "./datasets/OIOD/processed",
+        "./datasets/PINDWS/processed",
+    ]:
+        del dm
+        data_path = datasets_path
+        dm_crossTest = IODDataModule(
+            data_dir=f"{data_path}",
+            # batch_size=BATCH_SIZE,
+            num_workers=int(
+                torch.get_num_threads()
+                / torch.cuda.device_count()
+                # / int(torch.cuda.mem_get_info()[1] / 24892145664)
+            ),
+            pin_memory=False,
+            shuffle=True,
+            label=True,
+            whole_testing=True,
+        )
 
-    del dm
-    data_path = "./datasets/ADVIO/advio_wm"
-    dm_crossTest = IODDataModule(
-        data_dir=f"{data_path}",
-        # batch_size=BATCH_SIZE,
-        num_workers=int(
-            torch.get_num_threads()
-            / torch.cuda.device_count()
-            # / int(torch.cuda.mem_get_info()[1] / 24892145664)
-        ),
-        pin_memory=False,
-        shuffle=True,
-        label=True,
-        whole_testing=True,
-    )
-    # data_path = "/tmp/trainer/spectrums/migration_wm"
-    # dm_crossTest = IODDataModule(
-    #     data_dir=f"{data_path}",
-    #     # batch_size=BATCH_SIZE,
-    #     num_workers=int(
-    #         torch.get_num_threads()
-    #         / torch.cuda.device_count()
-    #         / int(torch.cuda.mem_get_info()[1] / 24892145664)
-    #     ),
-    #     pin_memory=True,
-    #     shuffle=True,
-    #     label=True,
-    #     whole_testing=False,
-    # )
-    # dm_crossTest.setup("fit")
+        logger_test = pl.loggers.TensorBoardLogger(
+            save_dir=logger.save_dir + "/" + logger.name,
+            name="test-" + data_path.split("/")[-1].replace("datasets", ""),
+            version=version,
+            default_hp_metric=False,
+        )
+        trainer.logger = logger_test
+        print(
+            colored.Fore.green
+            + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f ")
+            + f"complete dm_crossTest setup with {args.accelerator} and {args.strategy}"
+            + colored.Style.reset
+        )
 
-    logger_test = pl.loggers.TensorBoardLogger(
-        save_dir=logger.save_dir + "/" + logger.name,
-        name="test-" + data_path.split("/")[-1].replace("datasets", ""),
-        version=version,
-        default_hp_metric=False,
-    )
-    trainer.logger = logger_test
-    print(
-        colored.Fore.green
-        + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f ")
-        + f"complete dm_crossTest setup with {args.accelerator} and {args.strategy}"
-        + colored.Style.reset
-    )
-
-    trainer.test(
-        model,
-        datamodule=dm_crossTest,
-        ckpt_path=weight_finder.weight_name[weight_index],
-    )
-    print(
-        colored.Fore.green
-        + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f ")
-        + f"complete tester.test with {args.accelerator} and {args.strategy}"
-        + colored.Style.reset
-    )
-    ###########################################################################################################################
-    # del dm_crossTest
-    # dm_test = NoiseModule()
-    # logger_test = pl.loggers.TensorBoardLogger(
-    #     save_dir=logger.save_dir + "/" + logger.name,
-    #     name="test-" + "noise",
-    #     version=version,
-    # )
-    # # swap the logger
-    # trainer.logger = logger_test
-
-    # dm_test.setup("test")
-    # trainer.test(
-    #     model,
-    #     datamodule=dm_test,
-    #     ckpt_path=trainer.checkpoint_callback.best_model_path,
-    # )
+        trainer.test(
+            model,
+            datamodule=dm_crossTest,
+            ckpt_path=weight_finder.weight_name[weight_index],
+        )
+        print(
+            colored.Fore.green
+            + datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f ")
+            + f"complete tester.test with {args.accelerator} and {args.strategy}"
+            + colored.Style.reset
+        )
